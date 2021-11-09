@@ -12,23 +12,45 @@
 </head>
 
 <body>
-    <div class="container">
+    <div class="container mt-5">
         <div class="row">
-            <header class="col-12">HEADER</header>
-            <div class="col-12">DESCRIPTION</div>
-        </div>
-        <div class="row">
-                <div class="col-4">SUBMIT A TWEET</div>
-                <div class="col-4">QUERY A TWEET</div>
-                <div class="col-4">WEB3 CONNECTION STATUS</div>    
-        </div>
-        <div class="row">
-            <div class="col-12">
-                CONTENT
+            <header class="col-12">
+                <h1 class="text-center">TWEET VERIFIER</h1>
+            </header>
+            <div class="col-12 text-center mt-0 mb-3 description p-2">
+                <div class="descsex">
+                    <p>Create proof of existence for tweets:</p>
+                    <p>Save the immutable copy of the tweet to blockchain. Others can verify that the tweet is existed as it is!</p>
+                </div>
+            </div>
+            <div class="col-10 offset-1 p-1 input-section">
+                <div class="row">
+                    <div class="col-4 input-label">
+                        <label for="input">Tweet URL or Record ID:</label>
+                    </div>
+                    <div class="col-8"><input class="w-100" id="input" type="text" placeholder="e.g. https://twitter.com/itu1773/status/1455891125370241031">
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row">
-            <footer class="col-12">FOOTER</footer>
+            <div class="col-4 p-2">
+                <button class="btn w-100 h-100">SUBMIT A TWEET</button>
+            </div>
+            <div class="col-4 p-2">
+                <button class="btn h-100 w-100">QUERY A TWEET</button>
+            </div>
+            <div class="col-4 p-2">
+                <button class="btn h-100 w-100">WEB3 CONNECTION STATUS <span class="circle"></span> </button>
+            </div>
+        </div>
+        <div class="row p-2">
+            <div class="col-12 content p-4">
+                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Doloribus quod eveniet quisquam, placeat nesciunt esse quo corporis iste delectus fuga.
+            </div>
+        </div>
+        <div class="row">
+            <footer class="col-12 mt-3 py-2">FOOTER</footer>
         </div>
     </div>
 </body>
