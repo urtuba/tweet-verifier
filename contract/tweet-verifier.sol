@@ -26,7 +26,6 @@ contract TweetVerifier  {
     
     // Storage
     
-    address [] authorized;
     mapping (bytes32 => TweetRecord) records;
     
         
