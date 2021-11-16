@@ -11,4 +11,11 @@ Go to deployment section. For demo purpose, **Javascript VM** can be used. Or **
 
 For live preview of current application: [Heroku: tweet-verifier](https://tweet-verifier.herokuapp.com)
 
-The deliverables for week 2 is completed (Contract API and Front-end Design)
+The deliverables for week 2 is completed (Contract API and Front-end Design).
+
+The deliverables for week 3 is completed (Functionalities of Front-end and improvement of Front-end visual design).
+
+# Functionalities:
+## Buttons:
+### Submit A Tweet Button:
+
