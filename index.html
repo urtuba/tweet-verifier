@@ -9,50 +9,53 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="./css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 </head>
 
 <body>
-    <div class="container mt-5">
+    <div class="container mt-5" id="app">
         <div class="row">
-            <header class="col-12">
-                <h1 class="text-center">TWEET VERIFIER</h1>
+            <header class="col-md-12">
+                <h1 class="text-center mt-3">TWEET VERIFIER</h1>
             </header>
-            <div class="col-12 text-center mt-0 mb-3 description p-2">
-                <div class="descsex">
+            <div class="col-md-12 text-center mt-0 description">
+                <div class="descsex mx-2 mt-2">
                     <p>Create proof of existence for tweets:</p>
-                    <p>Save the immutable copy of the tweet to blockchain. Others can verify that the tweet is existed as it is!</p>
+                    <p>Save the immutable copy of the tweet to blockchain.</p>
+                    <p>Others can verify that the tweet is existed as it is!</p>
                 </div>
             </div>
-            <div class="col-10 offset-1 p-1 input-section">
-                <div class="row">
-                    <div class="col-4 input-label">
+            <div class="col-md-10 offset-1 input-section mt-0">
+                <div class="row mt-0">
+                    <div class="col-md-5 input-label">
+                        <button class="btn btn-sm clearbtn mr-1" @click="clear()">Clear</button>
                         <label for="input">Tweet URL or Record ID:</label>
                     </div>
-                    <div class="col-8"><input class="w-100" id="input" type="text" placeholder="e.g. https://twitter.com/itu1773/status/1455891125370241031">
+                    <div class="col-md-7 input-area"><input class="w-100" id="input" type="text" placeholder="Please enter a Tweet URL or Record ID" v-model="link_or_record">
                     </div>
                 </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-4 p-2">
-                <button class="btn w-100 h-100">SUBMIT A TWEET</button>
+            <div class="col-md-4 p-2">
+                <button class="btn w-100 h-100 sbmt" @click="submit_tweet();">SUBMIT A TWEET</button>
             </div>
-            <div class="col-4 p-2">
-                <button class="btn h-100 w-100">QUERY A TWEET</button>
+            <div class="col-md-4 p-2">
+                <button class="btn h-100 w-100 qry" @click="query_tweet();">QUERY A TWEET</button>
             </div>
-            <div class="col-4 p-2">
-                <button class="btn h-100 w-100">WEB3 CONNECTION STATUS <span class="circle"></span> </button>
+            <div class="col-md-4 p-2">
+                <button class="btn h-100 w-100 web" @click="status = !status">WEB3 CONNECTION STATUS <span class="circle" :class="{red : !status,green : status}"></span> </button>
             </div>
         </div>
         <div class="row p-2">
-            <div class="col-12 content p-4">
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Doloribus quod eveniet quisquam, placeat nesciunt esse quo corporis iste delectus fuga.
+            <div class="col-md-12 content p-4">
+                <p v-html="content"></p>
             </div>
         </div>
         <div class="row">
-            <footer class="col-12 mt-3 py-2">FOOTER</footer>
+            <footer class="col-md-12 mt-3 py-2">FOOTER</footer>
         </div>
     </div>
+    <script src="./script.js"></script>
 </body>
-
 </html>
