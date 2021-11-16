@@ -18,4 +18,17 @@ The deliverables for week 3 is completed (Functionalities of Front-end and impro
 ## Front-end Functionalities:
 #### Buttons:
 ##### Submit A Tweet Button:
++ Change initial content in following cases:
+  1- When input is empty.
+  2- When the input is not a valid tweet URL.
+  3- When the input is a valid tweet URL (e.g. https://twitter.com/itu1773?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor)
+##### Query A Tweet Button:
++ Change initial content in following cases:
+  1- When input is empty.
+  2- When the input is not a valid Record Id (Can be tested by entering a string that is not with the lenght 5).
+  3- When the input is a valid Record Id (Can be tested by entering a string that is with the lenght 5).
+##### Web3 Connection Status Button:
++ Change status indicator color when clicked (The Web3 connection is not obtained at this level)
+##### Clear Button:
++ Change the current content to initial content.
 
