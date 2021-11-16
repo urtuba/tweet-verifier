@@ -21,7 +21,7 @@ The deliverables for week 3 is completed (Functionalities of Front-end and impro
 + Change initial content in following cases:
   <br />1- When input is empty.
   <br />2- When the input is not a valid tweet URL.
-  <br />3- When the input is a valid tweet URL (e.g. https://twitter.com/itu1773?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor)
+  <br />3- When the input is a valid tweet URL (e.g. https://twitter.com/itu1773?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor, twitter.com/itu1773?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor, www.twitter.com/itu1773?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor )
 ##### Query A Tweet Button:
 + Change initial content in following cases:
   <br />1- When input is empty.
