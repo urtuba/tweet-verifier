@@ -14,7 +14,7 @@ new Vue({
             if(this.link_or_record.length == 0){
                 this.content = "PLEASE ENTER A VALID URL!";
             }
-            else if(this.link_or_record.startsWith("https://twitter.com") == false && this.link_or_record.startsWith("twitter.com") == false && this.link_or_record.startsWith("twitter.com") == false){
+            else if(this.link_or_record.startsWith("https://twitter.com") == false && this.link_or_record.startsWith("twitter.com") == false && this.link_or_record.startsWith("www.twitter.com") == false){
                 this.content = "THIS URL DOES NOT BELONG TO A TWEET. PLEASE ENTER A VALID URL!";
                 ;
             }
