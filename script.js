@@ -194,11 +194,8 @@ new Vue({
             this.content = "Welcome! Please enter a Tweet URL or Record ID to start using TWEET VERIFIER.";
         },
         async getTweet() {
-            // if(this.link_or_record.length < 15){
-            //     this.content = "PLEASE ENTER A VALID RECORD ID!";
-            //     return
-            // }
-            const resp = await this.contract.methods.getTweet('0x8ff488084daba7d182771080336e03786e728618cea949173b1c821461f2738d').call()
+
+            const resp = await this.contract.methods.getTweet(this.link_or_record).call()
             const recordedAt = resp[0]
             const tweetId = resp[1][0]
             const tweetetAt = resp[1][1]
@@ -244,15 +241,6 @@ new Vue({
                 </tr>
             </table>
             `
-        }
-        ,
-        query_tweet(){
-            if(this.link_or_record.length != 5){
-                this.content = "PLEASE ENTER A VALID RECORD ID!";
-            }
-            else{
-                this.content = "Your tweet record with Record Id <b>" + this.record_id + "</b>:<br>Time: " + this.time + "<br>Author: " + this.author + "<br>Tweet: " + this.tweet;
-            }
         },
         async connect_web3() {
             if (window.ethereum) {
