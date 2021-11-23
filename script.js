@@ -176,8 +176,38 @@ new Vue({
     methods : {
         async submit_tweet(){
             const resp = await fetch('./tweet.json', { method: 'GET'})
-            this.content = await resp.json()
-            console.log(resp)
+            const tweetData = await resp.json()
+            
+            const transaction =  this.contract.methods.saveTweet(
+                tweetData.id,
+                tweetData.time,
+                tweetData.message,
+                tweetData.name,
+                tweetData.nick,
+                tweetData.verified
+            )
+
+            const options = {
+                to: transaction._parent._address,
+                data: transaction.encodeABI(),
+                from: window.ethereum.selectedAddress,
+                gas: await transaction.estimateGas({from: this.account}),
+                gasPrice: Math.floor((await window.web3.eth.getGasPrice()) * 1.2)
+            }
+
+            const response = await transaction.send(options)
+        
+            // const tx = await transaction.call(options)
+            
+
+            const txlink = `https://ropsten.etherscan.io/tx/${response.events.NewTweetRecord.transactionHash}`
+            const recordId = response.events.NewTweetRecord.returnValues['0']
+            
+            this.content = `
+            <p>Transaction is successful. You can query tweet with recordID <span style="color:red">${recordId}</span>.</p>
+            <p><a href="${txlink}" target="_blank">investigate your transaction</a>
+            `
+            
             // if(this.link_or_record.length == 0){
             //     this.content = "PLEASE ENTER A VALID URL!";
             // }
