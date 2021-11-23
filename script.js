@@ -182,6 +182,8 @@ new Vue({
 
             const resp = await fetch('./tweet.json', { method: 'GET'})
             const tweetData = await resp.json()
+
+            this.content = 'Please Wait...'
             
             const transaction =  this.contract.methods.saveTweet(
                 tweetData.id,
@@ -212,17 +214,6 @@ new Vue({
             <p>Transaction is successful. You can query tweet with recordID <span style="color:red">${recordId}</span>.</p>
             <p><a href="${txlink}" target="_blank">investigate your transaction</a>
             `
-            
-            // if(this.link_or_record.length == 0){
-            //     this.content = "PLEASE ENTER A VALID URL!";
-            // }
-            // else if(this.link_or_record.startsWith("https://twitter.com") == false && this.link_or_record.startsWith("twitter.com") == false && this.link_or_record.startsWith("www.twitter.com") == false){
-            //     this.content = "THIS URL DOES NOT BELONG TO A TWEET. PLEASE ENTER A VALID URL!";
-            //     ;
-            // }
-            // else{
-            //     this.content = "Your tweet record with information:<br>Record Id: " + this.record_id + "<br>Time: " + this.time + "<br>Author: " + this.author + "<br>Tweet: " + this.tweet + "<br>Has been successfully recorded.<br><br><br>You can easily query your record by Record Id.";
-            // }
         },
         clear(){
             this.link_or_record = "";
