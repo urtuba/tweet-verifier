@@ -174,17 +174,20 @@ new Vue({
         contract: undefined
     },
     methods : {
-        submit_tweet(){
-            if(this.link_or_record.length == 0){
-                this.content = "PLEASE ENTER A VALID URL!";
-            }
-            else if(this.link_or_record.startsWith("https://twitter.com") == false && this.link_or_record.startsWith("twitter.com") == false && this.link_or_record.startsWith("www.twitter.com") == false){
-                this.content = "THIS URL DOES NOT BELONG TO A TWEET. PLEASE ENTER A VALID URL!";
-                ;
-            }
-            else{
-                this.content = "Your tweet record with information:<br>Record Id: " + this.record_id + "<br>Time: " + this.time + "<br>Author: " + this.author + "<br>Tweet: " + this.tweet + "<br>Has been successfully recorded.<br><br><br>You can easily query your record by Record Id.";
-            }
+        async submit_tweet(){
+            const resp = await fetch('./tweet.json', { method: 'GET'})
+            this.content = await resp.json()
+            console.log(resp)
+            // if(this.link_or_record.length == 0){
+            //     this.content = "PLEASE ENTER A VALID URL!";
+            // }
+            // else if(this.link_or_record.startsWith("https://twitter.com") == false && this.link_or_record.startsWith("twitter.com") == false && this.link_or_record.startsWith("www.twitter.com") == false){
+            //     this.content = "THIS URL DOES NOT BELONG TO A TWEET. PLEASE ENTER A VALID URL!";
+            //     ;
+            // }
+            // else{
+            //     this.content = "Your tweet record with information:<br>Record Id: " + this.record_id + "<br>Time: " + this.time + "<br>Author: " + this.author + "<br>Tweet: " + this.tweet + "<br>Has been successfully recorded.<br><br><br>You can easily query your record by Record Id.";
+            // }
         },
         clear(){
             this.link_or_record = "";
