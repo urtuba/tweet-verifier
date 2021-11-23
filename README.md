@@ -1,34 +1,71 @@
 # Tweet Verifier
-**Tweet verifier** aims to prevent the spread of false information. Users may submit a tweet by using their ethereum wallets to create immutable records of it. 
+**Tweet verifier** aims to prevent the spread of false information. Users may submit a tweet by using their ethereum wallets to create immutable records of it. It is planned as 4 week(1 working day) for 2 people, for Istanbul Technical University's Project I course.  
 
-## Smart Contract
+# Smart Contract
 
 For deployment, go to [Ethereum Remix](https://remix.ethereum.org). Upload the *tweet-verifier.sol*. Use a compatible solidity version(^0.4.0 - 0.6.0) to compile. (*You may get some warnings about some solidity features that are still beta.*)
 
 Go to deployment section. For demo purpose, **Javascript VM** can be used. Or **injected Web3** for on-chain tests. Vertical navigation in *Deploy, Run & Transactions* section show the contract and allows you to transact to contract. There are two functions: one for submitting new tweet record and a function to query tweet record by id.
 
-## Webpage
+# Webpage
 
+A simple front-end app is implemented for smart contract. `web3js` and `metamask` is used to connect Ethereum network.
 For live preview of current application: [Heroku: tweet-verifier](https://tweet-verifier.herokuapp.com)
 
-The deliverables for week 2 is completed (Contract API and Front-end Design).
+```
+In order to use preview webpage, you need to connect Ethereum ropsten test network. Contract is deployed there and its address & network is hardcoded.
+```
 
-The deliverables for week 3 is completed (Functionalities of Front-end and improvement of Front-end visual design).
 
-## Front-end Functionalities:
-#### Buttons:
-##### Submit A Tweet Button:
-+ Change initial content in following cases:
-  <br />1- When input is empty.
-  <br />2- When the input is not a valid tweet URL.
-  <br />3- When the input is a valid tweet URL (e.g. https://twitter.com/itu1773?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor, twitter.com/itu1773?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor, www.twitter.com/itu1773?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor )
-##### Query A Tweet Button:
-+ Change initial content in following cases:
-  <br />1- When input is empty.
-  <br />2- When the input is not a valid Record Id (Can be tested by entering a string that is not with the lenght 5).
-  <br />3- When the input is a valid Record Id (Can be tested by entering a string that is with the lenght 5).
-##### Web3 Connection Status Button:
-+ Change status indicator color when clicked (The Web3 connection is not obtained at this level)
-##### Clear Button:
+## Front-end Functionalities
+### Submit A Tweet
+Change initial content in following cases:
+
+1. When input is empty.
+2. When the input is not a valid tweet URL
+3. When the input is a valid tweet URL
+
+```
+NOTE: It submits the same tweet from (./tweet.json) each time. Because Twitter rejected API access and blocks web-scraping tweets. If you have API auth in a idle account, you can communicate to share keys.
+```
+
+### Query A Tweet 
+Change initial content in following cases:
+1. When input is empty.
+2. When the input is not a valid `recordId` (form doesn't check it)
+
+
+### Inject Web3
++ Use Google Chrome & Metamask extension
++ Change status indicator color when clicked (The Web3 connection via Metamask is obtained at this level)
+  
+### Clear
 + Change the current content to initial content.
 
+# Project Deliverables
+
+All completed.
+
+### W1
+* ~~Data Model~~
+* ~~Guide Materials~~
+
+### W2
+* ~~Smart Contract~~
+* ~~Front-end Draft~~
+
+### W3
+* ~~Contract API~~
+* ~~Front-end Functionalities & Design~~
+
+### W4
+* ~~Web-App~~
+* ~~_Presentation_~~
+
+
+# Licence
+MIT License
+
+Copyright (c) 2021 Samed Kahyaoglu, Guris Ozen
+
+[Full Text](https://github.com/urtuba/tweet-verifier/blob/main/LICENSE)
