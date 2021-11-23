@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="./css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 </head>
 
@@ -44,7 +45,7 @@
                 <button class="btn h-100 w-100 qry" @click="query_tweet();">QUERY A TWEET</button>
             </div>
             <div class="col-md-4 p-2">
-                <button class="btn h-100 w-100 web" @click="status = !status">WEB3 CONNECTION STATUS <span class="circle" :class="{red : !status,green : status}"></span> </button>
+                <button class="btn h-100 w-100 web" @click="connect_web3();">WEB3 CONNECTION STATUS <span class="circle" :class="{red : !active,green : active}"></span> </button>
             </div>
         </div>
         <div class="row p-2">
