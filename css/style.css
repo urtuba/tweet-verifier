@@ -1,10 +1,11 @@
 *{
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Courier Sans', Courier, monospace;
     font-weight: 600;
 }
 
 body{
     background-color: #457b9d;
+    margin-bottom: 2em;
 }
 
 h1{
@@ -15,6 +16,7 @@ h1{
 .container{
     background-color: #a8dadc;
     border-radius: 0.5em;
+    
 }
 
 .description{
@@ -74,6 +76,10 @@ footer{
 
 .green{
     background-color: rgb(0, 243, 0);
+}
+
+.redLink{
+    color: #e63946;
 }
 
 .sbmt{

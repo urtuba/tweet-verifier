@@ -175,6 +175,11 @@ new Vue({
     },
     methods : {
         async submit_tweet(){
+            if(this.active == false) {
+                alert('Connect to a wallet for this action!')
+                return
+            }
+
             const resp = await fetch('./tweet.json', { method: 'GET'})
             const tweetData = await resp.json()
             
@@ -224,6 +229,10 @@ new Vue({
             this.content = "Welcome! Please enter a Tweet URL or Record ID to start using TWEET VERIFIER.";
         },
         async getTweet() {
+            if(this.active == false) {
+                alert('Connect to a wallet for this action!')
+                return
+            }
 
             const resp = await this.contract.methods.getTweet(this.link_or_record).call()
             const recordedAt = resp[0]

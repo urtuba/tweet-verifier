@@ -45,7 +45,7 @@
                 <button class="btn h-100 w-100 qry" @click="getTweet();">QUERY A TWEET</button>
             </div>
             <div class="col-md-4 p-2">
-                <button class="btn h-100 w-100 web" @click="connect_web3();">WEB3 CONNECTION STATUS <span class="circle" :class="{red : !active,green : active}"></span> </button>
+                <button class="btn h-100 w-100 web" @click="connect_web3();">INJECT WEB3 <span class="circle" :class="{red : !active,green : active}"></span> </button>
             </div>
         </div>
         <div class="row p-2">
@@ -54,7 +54,13 @@
             </div>
         </div>
         <div class="row">
-            <footer class="col-md-12 mt-3 py-2">FOOTER</footer>
+            <footer class="col-md-12 mt-3 py-2">
+                <p>
+                    <a class="redLink" href="https://github.com/urtuba/" target="_blank">urtuba</a> x 
+                    <a class="redLink" href="https://github.com/gurisozen/" target="_blank">gurisozen</a> - 
+                    <a class="redLink" href="https://github.com/urtuba/tweet-verifier/" target="_blank">Tweet Verifier</a>
+                </p>
+            </footer>
         </div>
     </div>
     <script src="./script.js"></script>
