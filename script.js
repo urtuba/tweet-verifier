@@ -1,4 +1,4 @@
-const contract = {
+const contractData = {
     "abi": [
         {
             "anonymous": false,
@@ -140,6 +140,26 @@ const contract = {
     "address": "0x2Df14C63a92a93efc147F16954e875c7250EABeB"
 }
 
+const getWeb3 = () => {
+    return new Promise((resolve, reject) => {
+      window.addEventListener("load", async () => {
+        if (window.ethereum) {
+          const web3 = new Web3(window.ethereum);
+          try {
+            // ask user permission to access his accounts
+            await window.ethereum.request({ method: "eth_requestAccounts" });
+            resolve(web3);
+          } catch (error) {
+            reject(error);
+          }
+        } else {
+          reject("Must install MetaMask");
+        }
+      });
+    });
+  };
+
+
 new Vue({
     el : "#app",
     data : {
@@ -151,7 +171,7 @@ new Vue({
         content : "Welcome! Please enter a Tweet URL or Record ID to start using TWEET VERIFIER.",
         active : false,
         account: '',
-        web3: undefined
+        contract: undefined
     },
     methods : {
         submit_tweet(){
@@ -170,6 +190,59 @@ new Vue({
             this.link_or_record = "";
             this.content = "Welcome! Please enter a Tweet URL or Record ID to start using TWEET VERIFIER.";
         },
+        async getTweet() {
+            // if(this.link_or_record.length < 15){
+            //     this.content = "PLEASE ENTER A VALID RECORD ID!";
+            //     return
+            // }
+            const resp = await this.contract.methods.getTweet('0x8ff488084daba7d182771080336e03786e728618cea949173b1c821461f2738d').call()
+            const recordedAt = resp[0]
+            const tweetId = resp[1][0]
+            const tweetetAt = resp[1][1]
+            const message = resp[1][2]
+            const authorName = resp[1][3][0]
+            const authorNick = resp[1][3][1]
+            const verified = resp[1][3][2]
+            const recorderAddress = resp[2]
+            
+            this.content = `
+            <table class="table">
+                <tr>
+                    <td>Recorded At</td>
+                    <td>${recordedAt}</td>
+                </tr>
+                <tr>
+                    <td>Recorded By</td>
+                    <td>${recorderAddress}</td>
+                </tr>
+                <tr>
+                    <td>Author (Name)</td>
+                    <td>${authorName}</td>
+                </tr>
+                <tr>
+                    <td>Author (Username)</td>
+                    <td>${authorNick}</td>
+                </tr>
+                <tr>
+                    <td>Blue Tick</td>
+                    <td>${verified}</td>
+                </tr>
+                <tr>
+                    <td>Tweet</td>
+                    <td>${message}</td>
+                </tr>
+                <tr>
+                    <td>Tweeted At</td>
+                    <td>${tweetetAt}</td>
+                </tr>
+                <tr>
+                    <td>Tweet Id</td>
+                    <td>${tweetId}</td>
+                </tr>
+            </table>
+            `
+        }
+        ,
         query_tweet(){
             if(this.link_or_record.length != 5){
                 this.content = "PLEASE ENTER A VALID RECORD ID!";
@@ -179,17 +252,21 @@ new Vue({
             }
         },
         async connect_web3() {
-            // if (this.active = true) {
-            //     this.active = false
-            //     return
-            // }
-            console.log(window.web3)
-
             if (window.ethereum) {
                 const resp = await window.ethereum.request({method: 'eth_requestAccounts'})
-                // await ethereum.enable()
-                this.content = `Account connected ${resp[0]}`
+                this.account = resp[0]
+
+                const bal = parseInt(await window.ethereum.request({
+                    method: 'eth_getBalance',
+                    params: [this.account, 'latest']
+                }))/(10**18)
+
+                this.content = `<p> Account address: ${this.account}</p><p>Account balance: ${bal}</p>`
                 this.active = true
+
+                window.web3 = new Web3(window.ethereum)
+
+                this.contract = new window.web3.eth.Contract(contractData.abi, contractData.address)
             } 
             else {
                 this.active = false
