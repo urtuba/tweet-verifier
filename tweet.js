@@ -205,3 +205,35 @@ export async function fetchTweet(input, { fetchImpl = globalThis.fetch, ParserCl
     }
     return tweetFromOembed(data, parsed.id, ParserClass);
 }
+
+/** A record id is a bytes32 value: 0x followed by 64 hex digits. */
+export function isRecordId(input) {
+    return typeof input === "string" && /^0x[0-9a-fA-F]{64}$/.test(input.trim());
+}
+
+function formatDate(ms) {
+    const date = new Date(ms);
+    if (Number.isNaN(date.getTime())) return null;
+    return date.toISOString().slice(0, 19).replace("T", " ") + " UTC";
+}
+
+/** Block timestamp (seconds since 1970, as a string or number) -> "2026-10-09 17:00:00 UTC" */
+export function formatSeconds(seconds) {
+    const value = Number(seconds);
+    if (!Number.isSafeInteger(value) || value <= 0) return "unknown";
+    return formatDate(value * 1000) || "unknown";
+}
+
+/**
+ * Tweet time (milliseconds since 1970, as a string or number) as saved by this page.
+ * 0 means unknown. An old tweet saved with only its date shows just the date.
+ */
+export function formatMillis(millis) {
+    const value = Number(millis);
+    if (!Number.isSafeInteger(value) || value <= 0) return "unknown";
+    const text = formatDate(value);
+    if (text === null) return "unknown";
+    const oldTweet = value < 1288834974657;
+    if (oldTweet && value % 86400000 === 0) return text.slice(0, 10) + " (date only)";
+    return text;
+}

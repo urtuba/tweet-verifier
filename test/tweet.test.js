@@ -3,6 +3,9 @@ import { DOMParser } from "linkedom";
 import {
   TweetError,
   fetchTweet,
+  formatMillis,
+  formatSeconds,
+  isRecordId,
   parseOembedDate,
   parseOembedHtml,
   parseTweetUrl,
@@ -258,5 +261,41 @@ describe("fetchTweet", () => {
       expect(error).to.be.instanceOf(TweetError);
       expect(error.message).to.match(/does not understand/);
     }
+  });
+});
+
+describe("isRecordId", () => {
+  it("accepts 0x and 64 hex digits, with spaces around", () => {
+    const id = "0x03503908a8e17bc2ecdf5962ba0b032f6fca61080ec046755c6eb7fe4134756e";
+    expect(isRecordId(id)).to.equal(true);
+    expect(isRecordId("  " + id + " ")).to.equal(true);
+    expect(isRecordId(id.toUpperCase().replace("0X", "0x"))).to.equal(true);
+  });
+
+  it("rejects anything else", () => {
+    expect(isRecordId("")).to.equal(false);
+    expect(isRecordId("0x1234")).to.equal(false);
+    expect(isRecordId("03503908a8e17bc2ecdf5962ba0b032f6fca61080ec046755c6eb7fe4134756e")).to.equal(false);
+    expect(isRecordId("0xzz3503908a8e17bc2ecdf5962ba0b032f6fca61080ec046755c6eb7fe4134756e")).to.equal(false);
+    expect(isRecordId("https://x.com/jack/status/20")).to.equal(false);
+    expect(isRecordId(undefined)).to.equal(false);
+  });
+});
+
+describe("time formatting", () => {
+  it("formats block timestamps in seconds", () => {
+    expect(formatSeconds("1651107418")).to.equal("2022-04-28 00:56:58 UTC");
+    expect(formatSeconds(0)).to.equal("unknown");
+    expect(formatSeconds("abc")).to.equal("unknown");
+  });
+
+  it("formats tweet times in milliseconds", () => {
+    expect(formatMillis("1651107418845")).to.equal("2022-04-28 00:56:58 UTC");
+    expect(formatMillis(0)).to.equal("unknown");
+    expect(formatMillis("99999999999999999999")).to.equal("unknown");
+  });
+
+  it("shows only the date for an old tweet saved with just its date", () => {
+    expect(formatMillis(Date.UTC(2006, 2, 21))).to.equal("2006-03-21 (date only)");
   });
 });
