@@ -1,3 +1,5 @@
+import { TweetError, fetchTweet } from "./tweet.js";
+
 const WELCOME = "Welcome! Please enter a Tweet URL or Record ID to start using TWEET VERIFIER.";
 
 // Values shown with v-html must be escaped first.
@@ -43,21 +45,22 @@ new Vue({
             }
 
             try {
-                const resp = await fetch('./tweet.json', { method: 'GET'})
-                const tweetData = await resp.json()
+                this.content = 'Fetching the tweet from X...'
+                const tweet = await fetchTweet(this.link_or_record)
 
-                this.content = 'Please Wait...'
-
+                this.content = 'Saving the tweet to the local EVM...'
                 const transaction = this.contract.methods.saveTweet(
-                    tweetData.id,
-                    tweetData.time,
-                    tweetData.message,
-                    tweetData.name,
-                    tweetData.nick,
-                    tweetData.verified
+                    tweet.id,
+                    tweet.time,
+                    tweet.message,
+                    tweet.name,
+                    tweet.nick,
+                    tweet.verified
                 )
 
-                const gas = await transaction.estimateGas({from: this.account})
+                // Tevm's estimate can be a little too low for storage writes, so leave room.
+                const estimate = await transaction.estimateGas({from: this.account})
+                const gas = Math.ceil(Number(estimate) * 1.5)
                 const response = await transaction.send({from: this.account, gas})
 
                 const recordId = response.events.NewTweetRecord.returnValues['0']
@@ -65,11 +68,14 @@ new Vue({
 
                 this.content = `
                 <p>Transaction is successful. You can query tweet with recordID <span style="color:red">${escapeHtml(recordId)}</span>.</p>
+                <p>Saved: ${escapeHtml(tweet.name)} (@${escapeHtml(tweet.nick)}): ${escapeHtml(tweet.message)}</p>
+                <p>Verified badge: saved as false (X does not tell). ${escapeHtml(tweet.timeNote)}</p>
                 <p>Local transaction hash: ${escapeHtml(txHash)}</p>
                 `
             } catch (error) {
-                console.error(error)
-                this.content = `<p>Could not save the tweet: ${escapeHtml(error && error.message || error)}</p>`
+                if (!(error instanceof TweetError)) console.error(error)
+                const reason = error instanceof TweetError ? error.message : "Could not save the tweet: " + (error && error.message || error)
+                this.content = `<p>${escapeHtml(reason)}</p>`
             }
         },
         clear(){

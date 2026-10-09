@@ -58,7 +58,8 @@ export async function startLocalEvm() {
     } else {
         const factory = new web3.eth.Contract(abi);
         const deployment = factory.deploy({ data: bytecode });
-        const gas = await deployment.estimateGas({ from: account });
+        // Leave room above the estimate: a transaction that runs out of gas fails.
+        const gas = Math.ceil(Number(await deployment.estimateGas({ from: account })) * 1.5);
         contract = await deployment.send({ from: account, gas });
         if (storage) {
             try {
