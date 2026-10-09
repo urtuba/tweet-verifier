@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import hre from "hardhat";
-import { solidityPackedKeccak256, ZeroAddress, ZeroHash } from "ethers";
+import { id as keccakText, solidityPackedKeccak256, ZeroAddress, ZeroHash } from "ethers";
 
 const TWEET = {
   id: "20",
@@ -99,6 +99,48 @@ describe("TweetVerifier", () => {
     it("returns an empty record before anything is saved under the id", async () => {
       const record = await contract.getTweet(expectedRecordId(TWEET));
       expect(record.timestamp).to.equal(0n);
+    });
+  });
+
+  describe("NewTweetRecord event", () => {
+    it("is declared in the ABI exactly as the front end expects: one unnamed, non-indexed bytes32", async () => {
+      const artifact = await hre.artifacts.readArtifact("TweetVerifier");
+      const events = artifact.abi.filter((item) => item.type === "event");
+      expect(events).to.deep.equal([
+        {
+          anonymous: false,
+          inputs: [{ indexed: false, internalType: "bytes32", name: "", type: "bytes32" }],
+          name: "NewTweetRecord",
+          type: "event",
+        },
+      ]);
+    });
+
+    it("is emitted once by saveTweet and carries the record id", async () => {
+      const receipt = await (await contract.saveTweet(...args(TWEET))).wait();
+
+      expect(receipt.logs).to.have.length(1);
+      const log = receipt.logs[0];
+      expect(log.address).to.equal(await contract.getAddress());
+      expect(log.topics).to.deep.equal([keccakText("NewTweetRecord(bytes32)")]);
+
+      const parsed = contract.interface.parseLog(log);
+      expect(parsed.name).to.equal("NewTweetRecord");
+      expect(parsed.args[0]).to.equal(expectedRecordId(TWEET));
+    });
+
+    it("is emitted again when the same tweet is saved again", async () => {
+      await (await contract.saveTweet(...args(TWEET))).wait();
+      const receipt = await (await contract.saveTweet(...args(TWEET))).wait();
+
+      expect(receipt.logs).to.have.length(1);
+      expect(contract.interface.parseLog(receipt.logs[0]).args[0]).to.equal(expectedRecordId(TWEET));
+    });
+
+    it("leaves one log after one save; reading with getTweet adds none", async () => {
+      await (await contract.saveTweet(...args(TWEET))).wait();
+      const logs = await ethers.provider.getLogs({ address: await contract.getAddress(), fromBlock: 0 });
+      expect(logs).to.have.length(1);
     });
   });
 
