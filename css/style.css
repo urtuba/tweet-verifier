@@ -96,3 +96,17 @@ footer{
     background-color: #6930c3;
     color: #fff;
 }
+
+.evm-status{
+    pointer-events: none;
+    cursor: default;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.evm-status small{
+    flex-basis: 100%;
+    font-weight: 600;
+}

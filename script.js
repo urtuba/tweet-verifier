@@ -1,300 +1,139 @@
-const contractData = {
-    "abi": [
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "internalType": "bytes32",
-                    "name": "",
-                    "type": "bytes32"
-                }
-            ],
-            "name": "NewTweetRecord",
-            "type": "event"
-        },
-        {
-            "constant": true,
-            "inputs": [
-                {
-                    "internalType": "bytes32",
-                    "name": "recordId",
-                    "type": "bytes32"
-                }
-            ],
-            "name": "getTweet",
-            "outputs": [
-                {
-                    "components": [
-                        {
-                            "internalType": "uint256",
-                            "name": "timestamp",
-                            "type": "uint256"
-                        },
-                        {
-                            "components": [
-                                {
-                                    "internalType": "string",
-                                    "name": "id",
-                                    "type": "string"
-                                },
-                                {
-                                    "internalType": "uint256",
-                                    "name": "time",
-                                    "type": "uint256"
-                                },
-                                {
-                                    "internalType": "string",
-                                    "name": "message",
-                                    "type": "string"
-                                },
-                                {
-                                    "components": [
-                                        {
-                                            "internalType": "string",
-                                            "name": "name",
-                                            "type": "string"
-                                        },
-                                        {
-                                            "internalType": "string",
-                                            "name": "nick",
-                                            "type": "string"
-                                        },
-                                        {
-                                            "internalType": "bool",
-                                            "name": "verified",
-                                            "type": "bool"
-                                        }
-                                    ],
-                                    "internalType": "struct TweetVerifier.Author",
-                                    "name": "author",
-                                    "type": "tuple"
-                                }
-                            ],
-                            "internalType": "struct TweetVerifier.Tweet",
-                            "name": "tweet",
-                            "type": "tuple"
-                        },
-                        {
-                            "internalType": "address",
-                            "name": "sender",
-                            "type": "address"
-                        }
-                    ],
-                    "internalType": "struct TweetVerifier.TweetRecord",
-                    "name": "",
-                    "type": "tuple"
-                }
-            ],
-            "payable": false,
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "constant": false,
-            "inputs": [
-                {
-                    "internalType": "string",
-                    "name": "id",
-                    "type": "string"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "time",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "string",
-                    "name": "message",
-                    "type": "string"
-                },
-                {
-                    "internalType": "string",
-                    "name": "authorName",
-                    "type": "string"
-                },
-                {
-                    "internalType": "string",
-                    "name": "authorNick",
-                    "type": "string"
-                },
-                {
-                    "internalType": "bool",
-                    "name": "authorVerified",
-                    "type": "bool"
-                }
-            ],
-            "name": "saveTweet",
-            "outputs": [
-                {
-                    "internalType": "bytes32",
-                    "name": "",
-                    "type": "bytes32"
-                }
-            ],
-            "payable": false,
-            "stateMutability": "nonpayable",
-            "type": "function"
-        }
-    ],
-    "address": "0x2Df14C63a92a93efc147F16954e875c7250EABeB"
-}
+const WELCOME = "Welcome! Please enter a Tweet URL or Record ID to start using TWEET VERIFIER.";
 
-const getWeb3 = () => {
-    return new Promise((resolve, reject) => {
-      window.addEventListener("load", async () => {
-        if (window.ethereum) {
-          const web3 = new Web3(window.ethereum);
-          try {
-            // ask user permission to access his accounts
-            await window.ethereum.request({ method: "eth_requestAccounts" });
-            resolve(web3);
-          } catch (error) {
-            reject(error);
-          }
-        } else {
-          reject("Must install MetaMask");
-        }
-      });
-    });
-  };
-
+// Values shown with v-html must be escaped first.
+const escapeHtml = (value) =>
+    String(value).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
 new Vue({
     el : "#app",
     data : {
         link_or_record : "",
-        record_id : "abcde",
-        time: "28-01-2021",
-        tweet: "What a nice day!",
-        author: "@gurisozen",
-        content : "Welcome! Please enter a Tweet URL or Record ID to start using TWEET VERIFIER.",
+        content : WELCOME,
+        // Status of the local EVM: "starting", "ready" or "error"
+        evm_state : "starting",
+        evm_note : "starting...",
         active : false,
-        account: '',
-        contract: undefined
+        account : '',
+        contract : undefined
+    },
+    created() {
+        this.start_evm()
     },
     methods : {
+        async start_evm() {
+            try {
+                const { startLocalEvm } = await import("./evm.js")
+                const evm = await startLocalEvm()
+                this.account = evm.account
+                this.contract = evm.contract
+                this.active = true
+                this.evm_state = "ready"
+                this.evm_note = evm.persisted ? "ready (saved in this browser)" : "ready (lost on reload)"
+            } catch (error) {
+                console.error(error)
+                this.evm_state = "error"
+                this.evm_note = "failed to start"
+                this.content = `<p>The local EVM could not start: ${escapeHtml(error && error.message || error)}</p>`
+            }
+        },
         async submit_tweet(){
-            if(this.active == false) {
-                alert('Connect to a wallet for this action!')
+            if(!this.active) {
+                this.content = "The local EVM is not ready yet."
                 return
             }
 
-            const resp = await fetch('./tweet.json', { method: 'GET'})
-            const tweetData = await resp.json()
+            try {
+                const resp = await fetch('./tweet.json', { method: 'GET'})
+                const tweetData = await resp.json()
 
-            this.content = 'Please Wait...'
-            
-            const transaction =  this.contract.methods.saveTweet(
-                tweetData.id,
-                tweetData.time,
-                tweetData.message,
-                tweetData.name,
-                tweetData.nick,
-                tweetData.verified
-            )
+                this.content = 'Please Wait...'
 
-            const options = {
-                to: transaction._parent._address,
-                data: transaction.encodeABI(),
-                from: window.ethereum.selectedAddress,
-                gas: await transaction.estimateGas({from: this.account}),
-                gasPrice: Math.floor((await window.web3.eth.getGasPrice()) * 1.2)
+                const transaction = this.contract.methods.saveTweet(
+                    tweetData.id,
+                    tweetData.time,
+                    tweetData.message,
+                    tweetData.name,
+                    tweetData.nick,
+                    tweetData.verified
+                )
+
+                const gas = await transaction.estimateGas({from: this.account})
+                const response = await transaction.send({from: this.account, gas})
+
+                const recordId = response.events.NewTweetRecord.returnValues['0']
+                const txHash = response.transactionHash
+
+                this.content = `
+                <p>Transaction is successful. You can query tweet with recordID <span style="color:red">${escapeHtml(recordId)}</span>.</p>
+                <p>Local transaction hash: ${escapeHtml(txHash)}</p>
+                `
+            } catch (error) {
+                console.error(error)
+                this.content = `<p>Could not save the tweet: ${escapeHtml(error && error.message || error)}</p>`
             }
-
-            const response = await transaction.send(options)
-        
-            // const tx = await transaction.call(options)
-            
-
-            const txlink = `https://ropsten.etherscan.io/tx/${response.events.NewTweetRecord.transactionHash}`
-            const recordId = response.events.NewTweetRecord.returnValues['0']
-            
-            this.content = `
-            <p>Transaction is successful. You can query tweet with recordID <span style="color:red">${recordId}</span>.</p>
-            <p><a href="${txlink}" target="_blank">investigate your transaction</a>
-            `
         },
         clear(){
             this.link_or_record = "";
-            this.content = "Welcome! Please enter a Tweet URL or Record ID to start using TWEET VERIFIER.";
+            this.content = WELCOME;
         },
         async getTweet() {
-            if(this.active == false) {
-                alert('Connect to a wallet for this action!')
+            if(!this.active) {
+                this.content = "The local EVM is not ready yet."
                 return
             }
 
-            const resp = await this.contract.methods.getTweet(this.link_or_record).call()
-            const recordedAt = resp[0]
-            const tweetId = resp[1][0]
-            const tweetetAt = resp[1][1]
-            const message = resp[1][2]
-            const authorName = resp[1][3][0]
-            const authorNick = resp[1][3][1]
-            const verified = resp[1][3][2]
-            const recorderAddress = resp[2]
-            
-            this.content = `
-            <table class="table">
-                <tr>
-                    <td>Recorded At</td>
-                    <td>${recordedAt}</td>
-                </tr>
-                <tr>
-                    <td>Recorded By</td>
-                    <td>${recorderAddress}</td>
-                </tr>
-                <tr>
-                    <td>Author (Name)</td>
-                    <td>${authorName}</td>
-                </tr>
-                <tr>
-                    <td>Author (Username)</td>
-                    <td>${authorNick}</td>
-                </tr>
-                <tr>
-                    <td>Blue Tick</td>
-                    <td>${verified}</td>
-                </tr>
-                <tr>
-                    <td>Tweet</td>
-                    <td>${message}</td>
-                </tr>
-                <tr>
-                    <td>Tweeted At</td>
-                    <td>${tweetetAt}</td>
-                </tr>
-                <tr>
-                    <td>Tweet Id</td>
-                    <td>${tweetId}</td>
-                </tr>
-            </table>
-            `
-        },
-        async connect_web3() {
-            if (window.ethereum) {
-                const resp = await window.ethereum.request({method: 'eth_requestAccounts'})
-                this.account = resp[0]
+            try {
+                const resp = await this.contract.methods.getTweet(this.link_or_record).call()
+                const recordedAt = resp[0]
+                const tweetId = resp[1][0]
+                const tweetetAt = resp[1][1]
+                const message = resp[1][2]
+                const authorName = resp[1][3][0]
+                const authorNick = resp[1][3][1]
+                const verified = resp[1][3][2]
+                const recorderAddress = resp[2]
 
-                const bal = parseInt(await window.ethereum.request({
-                    method: 'eth_getBalance',
-                    params: [this.account, 'latest']
-                }))/(10**18)
-
-                this.content = `<p> Account address: ${this.account}</p><p>Account balance: ${bal}</p>`
-                this.active = true
-
-                window.web3 = new Web3(window.ethereum)
-
-                this.contract = new window.web3.eth.Contract(contractData.abi, contractData.address)
-            } 
-            else {
-                this.active = false
-                this.web3 = undefined
+                this.content = `
+                <table class="table">
+                    <tr>
+                        <td>Recorded At</td>
+                        <td>${escapeHtml(recordedAt)}</td>
+                    </tr>
+                    <tr>
+                        <td>Recorded By</td>
+                        <td>${escapeHtml(recorderAddress)}</td>
+                    </tr>
+                    <tr>
+                        <td>Author (Name)</td>
+                        <td>${escapeHtml(authorName)}</td>
+                    </tr>
+                    <tr>
+                        <td>Author (Username)</td>
+                        <td>${escapeHtml(authorNick)}</td>
+                    </tr>
+                    <tr>
+                        <td>Blue Tick</td>
+                        <td>${escapeHtml(verified)}</td>
+                    </tr>
+                    <tr>
+                        <td>Tweet</td>
+                        <td>${escapeHtml(message)}</td>
+                    </tr>
+                    <tr>
+                        <td>Tweeted At</td>
+                        <td>${escapeHtml(tweetetAt)}</td>
+                    </tr>
+                    <tr>
+                        <td>Tweet Id</td>
+                        <td>${escapeHtml(tweetId)}</td>
+                    </tr>
+                </table>
+                `
+            } catch (error) {
+                console.error(error)
+                this.content = `<p>Could not query the record: ${escapeHtml(error && error.message || error)}</p>`
             }
         }
     }
-
 }
 );

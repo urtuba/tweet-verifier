@@ -41,13 +41,13 @@
         </div>
         <div class="row">
             <div class="col-md-4 p-2">
-                <button class="btn w-100 h-100 sbmt" @click="submit_tweet();">SUBMIT A TWEET</button>
+                <button class="btn w-100 h-100 sbmt" @click="submit_tweet();" :disabled="!active">SUBMIT A TWEET</button>
             </div>
             <div class="col-md-4 p-2">
-                <button class="btn h-100 w-100 qry" @click="getTweet();">QUERY A TWEET</button>
+                <button class="btn h-100 w-100 qry" @click="getTweet();" :disabled="!active">QUERY A TWEET</button>
             </div>
             <div class="col-md-4 p-2">
-                <button class="btn h-100 w-100 web" @click="connect_web3();">INJECT WEB3 <span class="circle" :class="{red : !active,green : active}"></span> </button>
+                <div class="btn h-100 w-100 web evm-status" role="status">LOCAL EVM <span class="circle" :class="{red : !active,green : active}"></span> <small>{{ evm_note }}</small></div>
             </div>
         </div>
         <div class="row p-2">
@@ -65,6 +65,6 @@
             </footer>
         </div>
     </div>
-    <script src="./script.js"></script>
+    <script type="module" src="./script.js"></script>
 </body>
 </html>
