@@ -28,7 +28,10 @@ contract TweetVerifier  {
     
     mapping (bytes32 => TweetRecord) records;
     
-        
+    // Events
+
+    event NewTweetRecord(bytes32);
+    
     // Functionality
     
     function saveTweet(string memory id, uint time, string memory message, string memory authorName, string memory authorNick, bool authorVerified) 
@@ -42,6 +45,9 @@ contract TweetVerifier  {
         Tweet memory tweet = Tweet(id, time, message, author);
         records[recordId] = TweetRecord(now, tweet, msg.sender);
         
+        // announce the new record, so callers can read its id from the receipt
+        emit NewTweetRecord(recordId);
+
         // return its id
         return recordId;
     }

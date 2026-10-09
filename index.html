@@ -6,11 +6,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tweet Verification</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="./css/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.4/dist/web3.min.js"
+        integrity="sha384-ulu2XS1P+kSni6pddyZyDGmNiztg1R9ziuOn0U+RtEoVB46ekZ9MLOzruBMtXjQQ" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.min.js"
+        integrity="sha384-YVYXhPGIH/Gmcr0W5Rin4PcpcsG1a4pcdUUod1CnbDEJut7XiUaJtSlNKeRLJBPk" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -22,8 +25,9 @@
             <div class="col-md-12 text-center mt-0 description">
                 <div class="descsex mx-2 mt-2">
                     <p>Create proof of existence for tweets:</p>
-                    <p>Save the immutable copy of the tweet to blockchain.</p>
-                    <p>Others can verify that the tweet is existed as it is!</p>
+                    <p>Save a copy of a public tweet as a record.</p>
+                    <p>Others can check that the tweet existed as it is!</p>
+                    <p class="demo-note">Demo: the contract runs on an EVM inside this page. On a real network the record would be public and permanent; here it lives only in your browser.</p>
                 </div>
             </div>
             <div class="col-md-10 offset-1 input-section mt-0">
@@ -32,37 +36,38 @@
                         <button class="btn btn-sm clearbtn mr-1" @click="clear()">Clear</button>
                         <label for="input">Tweet URL or Record ID:</label>
                     </div>
-                    <div class="col-md-7 input-area"><input class="w-100" id="input" type="text" placeholder="Please enter a Tweet URL or Record ID" v-model="link_or_record">
+                    <div class="col-md-7 input-area"><input class="w-100" id="input" type="text" placeholder="https://x.com/jack/status/20 or 0x..." autocomplete="off" autocapitalize="off" spellcheck="false" v-model="link_or_record" @keyup.enter="enter()">
                     </div>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-md-4 p-2">
-                <button class="btn w-100 h-100 sbmt" @click="submit_tweet();">SUBMIT A TWEET</button>
+                <button class="btn w-100 h-100 sbmt" @click="submit_tweet();" :disabled="!active || busy">SUBMIT A TWEET</button>
             </div>
             <div class="col-md-4 p-2">
-                <button class="btn h-100 w-100 qry" @click="getTweet();">QUERY A TWEET</button>
+                <button class="btn h-100 w-100 qry" @click="getTweet();" :disabled="!active || busy">QUERY A TWEET</button>
             </div>
             <div class="col-md-4 p-2">
-                <button class="btn h-100 w-100 web" @click="connect_web3();">INJECT WEB3 <span class="circle" :class="{red : !active,green : active}"></span> </button>
+                <div class="btn h-100 w-100 web evm-status" role="status">LOCAL EVM <span class="circle" :class="{red : !active,green : active}"></span> <small>{{ evm_note }}</small></div>
             </div>
         </div>
         <div class="row p-2">
             <div class="col-md-12 content p-4">
-                <p v-html="content"></p>
+                <div v-html="content" aria-live="polite"></div>
             </div>
         </div>
         <div class="row">
             <footer class="col-md-12 mt-3 py-2">
                 <p>
-                    <a class="redLink" href="https://github.com/urtuba/" target="_blank">urtuba</a> x 
-                    <a class="redLink" href="https://github.com/gurisozen/" target="_blank">gurisozen</a> - 
-                    <a class="redLink" href="https://github.com/urtuba/tweet-verifier/" target="_blank">Tweet Verifier</a>
+                    <a class="redLink" href="https://github.com/urtuba/" target="_blank" rel="noopener">Samed Kahyaoglu</a> x
+                    <a class="redLink" href="https://github.com/gurisozen/" target="_blank" rel="noopener">Guris Özen</a>
+                    - ITU Project I, 2021, restored in 2026 -
+                    <a class="redLink" href="https://github.com/urtuba/tweet-verifier/" target="_blank" rel="noopener">Source</a>
                 </p>
             </footer>
         </div>
     </div>
-    <script src="./script.js"></script>
+    <script type="module" src="./script.js"></script>
 </body>
 </html>
